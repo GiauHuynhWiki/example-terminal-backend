@@ -107,12 +107,48 @@ post '/connection_token' do
   return {:secret => token.secret}.to_json
 end
 
+# This endpoint creates a Subscription by GiauHuynh.
+# https://stripe.com/docs/api/subscriptions/create?lang=ruby
+
+# Stripe::Subscription.create({
+#   customer: 'cus_NJiEYdcvpXW4LI',
+#   items: [
+#     {price: 'price_1MJvMLLugLZiZtEHra1tHvQ7'},
+#   ],
+# })
+
+post '/create_subscription' do
+  validationError = validateApiKey
+  if !validationError.nil?
+    status 400
+    return log_info(validationError)
+  end
+
+  begin
+    subscription = Stripe::Subscription.create({
+      customer: params[:customer_key] || 'cus_NH8OfKIsZA9uwN',
+      items: [
+        {price: params[:price_key] || 'price_1MJqh9LugLZiZtEHznyL6LxK'},
+      ],
+    })
+  rescue Stripe::StripeError => e
+    status 402
+    return log_info("Error creating Subscription! #{e.message}")
+  end
+
+  log_info("Subscription successfully created: #{subscription.id}")
+  status 200
+  return {:subscription => subscription.id}.to_json
+end
+
 # This endpoint creates a PaymentIntent.
 # https://stripe.com/docs/terminal/payments#create
 #
 # The example backend does not currently support connected accounts.
 # To create a PaymentIntent for a connected account, see
 # https://stripe.com/docs/terminal/features/connect#direct-payment-intents-server-side
+
+
 post '/create_payment_intent' do
   validationError = validateApiKey
   if !validationError.nil?
