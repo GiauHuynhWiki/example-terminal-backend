@@ -127,6 +127,14 @@ post '/create_subscription' do
   begin
     subscription = Stripe::Subscription.create({
       customer: params[:customer_key] || 'cus_NH8OfKIsZA9uwN',
+      
+      payment_method_types: params[:payment_method_types] || ['card_present'],
+      capture_method: params[:capture_method] || 'manual',
+      amount: params[:amount],
+      currency: params[:currency] || 'usd',
+      description: params[:description] || 'Example PaymentIntent',
+      payment_method_options: params[:payment_method_options] || [],
+
       items: [
         {price: params[:price_key] || 'price_1MJqh9LugLZiZtEHznyL6LxK'},
       ],
