@@ -111,7 +111,7 @@ end
 # This endpoint retrieves an invoice.
 # https://stripe.com/docs/api/invoices/retrieve
 
-post '/retrieve_invoice' do
+get '/retrieve_invoice' do
   validationError = validateApiKey
   if !validationError.nil?
     status 400
