@@ -134,9 +134,9 @@ post '/create_subscription' do
       # capture_method: params[:capture_method] || 'manual',
       # amount: params[:amount],
 
-      currency: params[:currency] || 'usd',
-      description: params[:description] || 'Example PaymentIntent',
-      payment_method_options: params[:payment_method_options] || [],
+      # currency: params[:currency] || 'usd',
+      # description: params[:description] || 'Example PaymentIntent',
+      # payment_method_options: params[:payment_method_options] || [],
 
 
 
