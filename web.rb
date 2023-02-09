@@ -151,7 +151,7 @@ post '/create_subscription' do
 
   log_info("Subscription successfully created: #{subscription.id}")
   status 200
-  return {:subscription => subscription.id}.to_json
+  return subscription.to_json
 end
 
 # This endpoint creates a PaymentIntent.
