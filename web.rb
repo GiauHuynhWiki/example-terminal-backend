@@ -107,15 +107,38 @@ post '/connection_token' do
   return {:secret => token.secret}.to_json
 end
 
+
+# This endpoint retrieves an invoice.
+# https://stripe.com/docs/api/invoices/retrieve
+
+post '/retrieve_invoice' do
+  validationError = validateApiKey
+  if !validationError.nil?
+    status 400
+    return log_info(validationError)
+  end
+
+  begin
+    invoice_id = params["invoice_id"]
+    log_info("invoice_id: #{invoice_id}")
+
+    invoice = Stripe::Invoice.retrieve(
+      invoice_id
+      )
+
+  rescue Stripe::StripeError => e
+    status 402
+    return log_info("Error creating Invoice! #{e.message}")
+  end
+
+  log_info("Retrieved invoice: #{invoice.id}")
+  status 200
+  return invoice.to_json
+end
+
+
 # This endpoint creates a Subscription by GiauHuynh.
 # https://stripe.com/docs/api/subscriptions/create?lang=ruby
-
-# Stripe::Subscription.create({
-#   customer: 'cus_NJiEYdcvpXW4LI',
-#   items: [
-#     {price: 'price_1MJvMLLugLZiZtEHra1tHvQ7'},
-#   ],
-# })
 
 post '/create_subscription' do
   validationError = validateApiKey
@@ -125,26 +148,8 @@ post '/create_subscription' do
   end
 
   begin
-    customer_key = params["customer_key"]
-    price_key = params["price_key"]
-    log_info("customer_key: #{customer_key}")
-    log_info("price_key: #{price_key}")
-
     subscription = Stripe::Subscription.create({
       customer: params[:customer_key] || 'cus_NH8OfKIsZA9uwN',
-
-
-
-      # payment_method_types: params[:payment_method_types] || ['card_present'],
-      # capture_method: params[:capture_method] || 'manual',
-      # amount: params[:amount],
-
-      # currency: params[:currency] || 'usd',
-      # description: params[:description] || 'Example PaymentIntent',
-      # payment_method_options: params[:payment_method_options] || [],
-
-
-
       items: [
         {price: params[:price_key] || 'price_1MJqh9LugLZiZtEHznyL6LxK'},
       ],
@@ -159,13 +164,13 @@ post '/create_subscription' do
   return subscription.to_json
 end
 
+
 # This endpoint creates a PaymentIntent.
 # https://stripe.com/docs/terminal/payments#create
 #
 # The example backend does not currently support connected accounts.
 # To create a PaymentIntent for a connected account, see
 # https://stripe.com/docs/terminal/features/connect#direct-payment-intents-server-side
-
 
 post '/create_payment_intent' do
   validationError = validateApiKey
