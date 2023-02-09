@@ -125,6 +125,11 @@ post '/create_subscription' do
   end
 
   begin
+    customer_key = params["customer_key"]
+    price_key = params["price_key"]
+    log_info("customer_key: #{customer_key}")
+    log_info("price_key: #{price_key}")
+
     subscription = Stripe::Subscription.create({
       customer: params[:customer_key] || 'cus_NH8OfKIsZA9uwN',
 
