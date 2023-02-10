@@ -120,8 +120,6 @@ get '/retrieve_invoice' do
 
   begin
     invoice_id = params["invoice_id"]
-    log_info("invoice_id: #{invoice_id}")
-
     invoice = Stripe::Invoice.retrieve(
       invoice_id
       )
