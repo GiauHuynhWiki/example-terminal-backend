@@ -151,7 +151,7 @@ post '/create_subscription' do
       items: [
         {price: params[:price_key] || 'price_1MJqh9LugLZiZtEHznyL6LxK'},
       ],
-      collection_method: 'default_incomplete',
+      collection_method: 'send_invoice',
 
 
     })
