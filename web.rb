@@ -151,11 +151,15 @@ post '/create_subscription' do
       items: [
         {price: params[:price_key] || 'price_1MJqh9LugLZiZtEHznyL6LxK'},
       ],
-      collection_method: 'send_invoice',
-      payment_settings: {
-        :payment_method_types => params[:payment_method_types] || ['card_present'],
-        :payment_method_options => params[:payment_method_options] || [],
-      },
+      collection_method: 'charge_automatically',
+      payment_behavior: 'allow_incomplete',
+
+
+
+      # payment_settings: {
+      #   :payment_method_types => params[:payment_method_types] || ['card_present'],
+      #   :payment_method_options => params[:payment_method_options] || [],
+      # },
 
     })
   rescue Stripe::StripeError => e
