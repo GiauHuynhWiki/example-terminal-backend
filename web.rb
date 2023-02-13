@@ -152,7 +152,10 @@ post '/create_subscription' do
         {price: params[:price_key] || 'price_1MJqh9LugLZiZtEHznyL6LxK'},
       ],
       collection_method: 'send_invoice',
-
+      payment_settings: {
+        :payment_method_types => params[:payment_method_types] || ['card_present'],
+        :payment_method_options => params[:payment_method_options] || [],
+      },
 
     })
   rescue Stripe::StripeError => e
