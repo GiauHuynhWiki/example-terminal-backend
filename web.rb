@@ -120,7 +120,7 @@ post '/create_customer' do
 
   begin
     customer = Stripe::Customer.create({
-      description: 'My First Test Customer (created for API docs at https://www.stripe.com/docs/api)',
+      description: 'Created by API',
     })
 
   rescue Stripe::StripeError => e
@@ -132,6 +132,42 @@ post '/create_customer' do
   status 200
   return customer.to_json
 end
+
+# This endpoint update a Customer.
+# https://stripe.com/docs/api/customers/update#update_customer-invoice_settings
+
+post '/update_customer' do
+  validationError = validateApiKey
+  if !validationError.nil?
+    status 400
+    return log_info(validationError)
+  end
+
+  begin
+    # customer_id = params[:customer_id] || 'cus_NM2RTgEn8ZhPUM'
+    # payment_method_id = params[:payment_method_id] || 'pm_1MbKN6LugLZiZtEHV0EV2Dms'
+    # log_info("customer_id: #{customer_id} - payment_method_id: #{payment_method_id}")
+
+    customer = Stripe::Customer.update(
+      'cus_NM2RTgEn8ZhPUM',
+      {
+        invoice_settings: 
+        {
+          default_payment_method: 'pm_1MbKN6LugLZiZtEHV0EV2Dms'
+        }
+      },
+      )
+
+  rescue Stripe::StripeError => e
+    status 402
+    return log_info("Error updating Customer! #{e.message}")
+  end
+
+  log_info("Customer successfully update: #{customer.id}")
+  status 200
+  return customer.to_json
+end
+
 
 
 # This endpoint creates a Subscription by GiauHuynh.
