@@ -108,6 +108,62 @@ post '/connection_token' do
 end
 
 
+# This endpoint creates a Customer.
+# https://stripe.com/docs/api/customers/create
+
+post '/create_customer' do
+  validationError = validateApiKey
+  if !validationError.nil?
+    status 400
+    return log_info(validationError)
+  end
+
+  begin
+    customer = Stripe::Customer.create({
+      description: 'My First Test Customer (created for API docs at https://www.stripe.com/docs/api)',
+    })
+
+  rescue Stripe::StripeError => e
+    status 402
+    return log_info("Error creating Customer! #{e.message}")
+  end
+
+  log_info("Customer successfully created: #{customer.id}")
+  status 200
+  return customer.to_json
+end
+
+
+# This endpoint creates a Subscription by GiauHuynh.
+# https://stripe.com/docs/api/subscriptions/create?lang=ruby
+
+post '/create_subscription' do
+  validationError = validateApiKey
+  if !validationError.nil?
+    status 400
+    return log_info(validationError)
+  end
+
+  begin
+    subscription = Stripe::Subscription.create({
+      customer: params[:customer_key] || 'cus_NH8OfKIsZA9uwN',
+      items: [
+        {price: params[:price_key] || 'price_1MJqh9LugLZiZtEHznyL6LxK'},
+      ],
+
+    })
+  rescue Stripe::StripeError => e
+    status 402
+    return log_info("Error creating Subscription! #{e.message}")
+  end
+
+  log_info("Subscription successfully created: #{subscription.id}")
+  status 200
+  return subscription.to_json
+end
+
+
+
 # This endpoint retrieves an invoice.
 # https://stripe.com/docs/api/invoices/retrieve
 
@@ -133,45 +189,6 @@ get '/retrieve_invoice' do
   status 200
   return invoice.to_json
 end
-
-
-# This endpoint creates a Subscription by GiauHuynh.
-# https://stripe.com/docs/api/subscriptions/create?lang=ruby
-
-post '/create_subscription' do
-  validationError = validateApiKey
-  if !validationError.nil?
-    status 400
-    return log_info(validationError)
-  end
-
-  begin
-    subscription = Stripe::Subscription.create({
-      customer: params[:customer_key] || 'cus_NH8OfKIsZA9uwN',
-      items: [
-        {price: params[:price_key] || 'price_1MJqh9LugLZiZtEHznyL6LxK'},
-      ],
-      collection_method: 'charge_automatically',
-      payment_behavior: 'allow_incomplete',
-
-
-
-      # payment_settings: {
-      #   :payment_method_types => params[:payment_method_types] || ['card_present'],
-      #   :payment_method_options => params[:payment_method_options] || [],
-      # },
-
-    })
-  rescue Stripe::StripeError => e
-    status 402
-    return log_info("Error creating Subscription! #{e.message}")
-  end
-
-  log_info("Subscription successfully created: #{subscription.id}")
-  status 200
-  return subscription.to_json
-end
-
 
 # This endpoint creates a PaymentIntent.
 # https://stripe.com/docs/terminal/payments#create
