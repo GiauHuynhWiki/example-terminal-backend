@@ -135,7 +135,7 @@ end
 
 # This endpoint update a Customer.
 # https://stripe.com/docs/api/customers/update#update_customer-invoice_settings
-post '/update_customer' do
+post '/set_default_payment_method' do
   validationError = validateApiKey
   if !validationError.nil?
     status 400
