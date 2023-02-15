@@ -148,14 +148,19 @@ post '/update_customer' do
     # payment_method_id = params[:payment_method_id] || 'pm_1MbKN6LugLZiZtEHV0EV2Dms'
     # log_info("customer_id: #{customer_id} - payment_method_id: #{payment_method_id}")
 
+    # customer = Stripe::Customer.update(
+    #   'cus_NM2RTgEn8ZhPUM',
+    #   {
+    #     invoice_settings: 
+    #     {
+    #       default_payment_method: 'pm_1MbKN6LugLZiZtEHV0EV2Dms'
+    #     }
+    #   },
+    #   )
+
     customer = Stripe::Customer.update(
-      'cus_NM2RTgEn8ZhPUM',
-      {
-        invoice_settings: 
-        {
-          default_payment_method: 'pm_1MbKN6LugLZiZtEHV0EV2Dms'
-        }
-      },
+      'cus_NM1P5azOVSMRqW',
+      {metadata: {order_id: '6789'}},
       )
 
   rescue Stripe::StripeError => e
