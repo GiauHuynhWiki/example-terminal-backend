@@ -133,30 +133,6 @@ post '/create_customer' do
 end
 
 
-# This endpoint retrieves a customer.
-# https://stripe.com/docs/api/customers/retrieve?lang=ruby
-get '/retrieve_customer' do
-  validationError = validateApiKey
-  if !validationError.nil?
-    status 400
-    return log_info(validationError)
-  end
-
-  begin
-    customer_id = params["customer_id"]
-    customer = Stripe::Customer.retrieve(customer_id)
-
-  rescue Stripe::StripeError => e
-    status 402
-    return log_info("Error retrieve Customer! #{e.message}")
-  end
-
-  log_info("Retrieved customer: #{customer.id}")
-  status 200
-  return customer.to_json
-end
-
-
 # This endpoint update a Customer.
 # https://stripe.com/docs/api/customers/update#update_customer-invoice_settings
 post '/update_customer' do
@@ -185,6 +161,56 @@ post '/update_customer' do
   return customer.to_json
 end
 
+
+# This endpoint retrieves a customer.
+# https://stripe.com/docs/api/customers/retrieve?lang=ruby
+get '/retrieve_customer' do
+  validationError = validateApiKey
+  if !validationError.nil?
+    status 400
+    return log_info(validationError)
+  end
+
+  begin
+    customer_id = params["customer_id"]
+    customer = Stripe::Customer.retrieve(customer_id)
+
+  rescue Stripe::StripeError => e
+    status 402
+    return log_info("Error retrieve Customer! #{e.message}")
+  end
+
+  log_info("Retrieved customer: #{customer.id}")
+  status 200
+  return customer.to_json
+end
+
+# This endpoint list customer's payment methods.
+# https://stripe.com/docs/api/payment_methods/customer_list
+get '/list_payment_methods' do
+  validationError = validateApiKey
+  if !validationError.nil?
+    status 400
+    return log_info(validationError)
+  end
+
+  begin
+    customer_id = params["customer_id"]
+
+    payment_methods = Stripe::Customer.list_payment_methods(
+      customer_id,
+      {type: 'card'},
+      )
+
+  rescue Stripe::StripeError => e
+    status 402
+    return log_info("Error list payment methods! #{e.message}")
+  end
+
+  log_info("Successfully list customer's payment methods")
+  status 200
+  return payment_methods.to_json
+end
 
 
 # This endpoint creates a Subscription by GiauHuynh.
