@@ -110,7 +110,6 @@ end
 
 # This endpoint creates a Customer.
 # https://stripe.com/docs/api/customers/create
-
 post '/create_customer' do
   validationError = validateApiKey
   if !validationError.nil?
@@ -133,9 +132,33 @@ post '/create_customer' do
   return customer.to_json
 end
 
+
+# This endpoint retrieves a customer.
+# https://stripe.com/docs/api/customers/retrieve?lang=ruby
+get '/retrieve_customer' do
+  validationError = validateApiKey
+  if !validationError.nil?
+    status 400
+    return log_info(validationError)
+  end
+
+  begin
+    customer_id = params["customer_id"]
+    customer = Stripe::Customer.retrieve(customer_id)
+
+  rescue Stripe::StripeError => e
+    status 402
+    return log_info("Error retrieve Customer! #{e.message}")
+  end
+
+  log_info("Retrieved customer: #{customer.id}")
+  status 200
+  return customer.to_json
+end
+
+
 # This endpoint update a Customer.
 # https://stripe.com/docs/api/customers/update#update_customer-invoice_settings
-
 post '/update_customer' do
   validationError = validateApiKey
   if !validationError.nil?
@@ -146,17 +169,6 @@ post '/update_customer' do
   begin
     customer_id = params[:customer_id]
     payment_method_id = params[:payment_method_id]
-    log_info("customer_id: #{customer_id} - payment_method_id: #{payment_method_id}")
-
-    # customer = Stripe::Customer.update(
-    #   'cus_NM2RTgEn8ZhPUM',
-    #   {
-    #     invoice_settings: 
-    #     {
-    #       default_payment_method: 'pm_1MbKN6LugLZiZtEHV0EV2Dms'
-    #     }
-    #   },
-    #   )
 
     customer = Stripe::Customer.update(
       customer_id,
@@ -177,7 +189,6 @@ end
 
 # This endpoint creates a Subscription by GiauHuynh.
 # https://stripe.com/docs/api/subscriptions/create?lang=ruby
-
 post '/create_subscription' do
   validationError = validateApiKey
   if !validationError.nil?
@@ -207,7 +218,6 @@ end
 
 # This endpoint retrieves an invoice.
 # https://stripe.com/docs/api/invoices/retrieve
-
 get '/retrieve_invoice' do
   validationError = validateApiKey
   if !validationError.nil?
@@ -223,7 +233,7 @@ get '/retrieve_invoice' do
 
   rescue Stripe::StripeError => e
     status 402
-    return log_info("Error creating Invoice! #{e.message}")
+    return log_info("Error retrieve Invoice! #{e.message}")
   end
 
   log_info("Retrieved invoice: #{invoice.id}")
@@ -237,7 +247,6 @@ end
 # The example backend does not currently support connected accounts.
 # To create a PaymentIntent for a connected account, see
 # https://stripe.com/docs/terminal/features/connect#direct-payment-intents-server-side
-
 post '/create_payment_intent' do
   validationError = validateApiKey
   if !validationError.nil?
