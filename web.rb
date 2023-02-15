@@ -133,35 +133,6 @@ post '/create_customer' do
 end
 
 
-# This endpoint update a Customer.
-# https://stripe.com/docs/api/customers/update#update_customer-invoice_settings
-post '/set_default_payment_method' do
-  validationError = validateApiKey
-  if !validationError.nil?
-    status 400
-    return log_info(validationError)
-  end
-
-  begin
-    customer_id = params[:customer_id]
-    payment_method_id = params[:payment_method_id]
-
-    customer = Stripe::Customer.update(
-      customer_id,
-      {invoice_settings: {default_payment_method: payment_method_id}},
-      )
-
-  rescue Stripe::StripeError => e
-    status 402
-    return log_info("Error updating Customer! #{e.message}")
-  end
-
-  log_info("Customer successfully update: #{customer.id}")
-  status 200
-  return customer.to_json
-end
-
-
 # This endpoint retrieves a customer.
 # https://stripe.com/docs/api/customers/retrieve?lang=ruby
 get '/retrieve_customer' do
@@ -210,6 +181,36 @@ get '/list_payment_methods' do
   log_info("Successfully list customer's payment methods")
   status 200
   return payment_methods.to_json
+end
+
+
+
+# This endpoint set default payment method.
+# https://stripe.com/docs/api/customers/update#update_customer-invoice_settings
+post '/set_default_payment_method' do
+  validationError = validateApiKey
+  if !validationError.nil?
+    status 400
+    return log_info(validationError)
+  end
+
+  begin
+    customer_id = params[:customer_id]
+    payment_method_id = params[:payment_method_id]
+
+    customer = Stripe::Customer.update(
+      customer_id,
+      {invoice_settings: {default_payment_method: payment_method_id}},
+      )
+
+  rescue Stripe::StripeError => e
+    status 402
+    return log_info("Error updating Customer! #{e.message}")
+  end
+
+  log_info("Customer successfully update: #{customer.id}")
+  status 200
+  return customer.to_json
 end
 
 
