@@ -159,8 +159,8 @@ post '/update_customer' do
     #   )
 
     customer = Stripe::Customer.update(
-      'cus_NM1P5azOVSMRqW',
-      {invoice_settings: {default_payment_method: 'pm_1MbJMjLugLZiZtEHbjasIzvb'}},
+      params[:customer_id] || 'cus_NMLmkKssd0j29F',
+      {invoice_settings: {default_payment_method: params[:payment_method_id] || 'pm_1Mbd4hLugLZiZtEHJzwJvcPc'}},
       )
 
   rescue Stripe::StripeError => e
