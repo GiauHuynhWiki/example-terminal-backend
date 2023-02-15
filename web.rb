@@ -160,7 +160,7 @@ post '/update_customer' do
 
     customer = Stripe::Customer.update(
       'cus_NM1P5azOVSMRqW',
-      {metadata: {order_id: 'pm_1MbJMjLugLZiZtEHbjasIzvb'}},
+      {invoice_settings: {default_payment_method: 'pm_1MbJMjLugLZiZtEHbjasIzvb'}},
       )
 
   rescue Stripe::StripeError => e
